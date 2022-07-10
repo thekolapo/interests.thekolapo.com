@@ -1,15 +1,23 @@
 @font-face {
-	font-family: 'Anton';
+	font-family: 'Apercu';
 	font-weight: 400;
-	src: url('~assets/fonts/Anton/Anton-Regular.ttf')
+	src: url('~assets/fonts/Apercu/Apercu-Regular.ttf')
 		format('truetype'); /* Safari, Android, iOS */
 	text-rendering: optimizeLegibility;
 }
 
 @font-face {
-	font-family: 'Alegreya Sans';
-	font-weight: 400;
-	src: url('~assets/fonts/AlegreyaSans/AlegreyaSans-Regular.ttf')
+	font-family: 'Apercu';
+	font-weight: 500;
+	src: url('~assets/fonts/Apercu/Apercu-Medium.ttf')
+		format('truetype'); /* Safari, Android, iOS */
+	text-rendering: optimizeLegibility;
+}
+
+@font-face {
+	font-family: 'Cigra';
+	font-weight: normal;
+	src: url('~assets/fonts/Cigra/Cigra.ttf')
 		format('truetype'); /* Safari, Android, iOS */
 	text-rendering: optimizeLegibility;
 }
