@@ -3,7 +3,7 @@
     <div class="c-home__filter">
       <button class="c-home__filter-toggle" @click="toggleFilter()">
         <span>Show</span>
-        <span>{{ activeTag }}</span>
+        <span>{{ capitalizeString(activeTag) }}</span>
         <svg
           ref="toggleIcon"
           width="17"
@@ -54,16 +54,21 @@ export default {
   },
   watch: {
     activeTag() {
-      setTimeout(() => {
-        this.toggleFilter()
-      }, 100)
-
       if (this.activeTag.toLowerCase() === 'everything') {
         this.$router.push({})
         return
       }
       this.$router.push({ query: { filter: this.activeTag.toLowerCase() } })
     },
+    '$route.query': {
+      handler() {
+        this.activeTag = this.$route.query.filter || 'Everything'
+        this.toggleFilter()
+      },
+    },
+  },
+  mounted() {
+    this.activeTag = this.$route.query.filter || 'Everything'
   },
   methods: {
     toggleFilter() {
@@ -76,6 +81,9 @@ export default {
         filterTags.style.maxHeight = `${filterTags.scrollHeight}px`
         this.$refs.toggleIcon.style.transform = 'rotate(-180deg)'
       }
+    },
+    capitalizeString(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1)
     },
   },
 }
@@ -92,12 +100,14 @@ export default {
     justify-content: center;
     flex-direction: column;
     max-width: 101rem;
+    align-items: center;
 
     &-toggle {
       background: transparent;
       border: transparent;
       font-size: 2.6rem;
       margin-bottom: 5rem;
+      width: fit-content;
 
       span:nth-child(2) {
         color: $color-pink;
