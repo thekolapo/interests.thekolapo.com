@@ -171,7 +171,7 @@ export default {
     },
     getPostImage(id) {
       const asset = this.assets.filter((asset) => asset.sys.id === id)
-      return `https:${asset[0].fields.file.url}`
+      return `https:${asset[0].fields.file.url}?fm=jpg&fl=progressive`
     },
   },
 }
@@ -304,7 +304,7 @@ export default {
         width: 100vw;
         max-height: 150vh;
         object-fit: cover;
-        pointer-events: none;
+        // pointer-events: none;
       }
 
       &:hover {
