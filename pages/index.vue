@@ -29,11 +29,93 @@
         </button>
       </div>
     </div>
+    <section v-for="(posts, key) in groupedPosts" :key="key" class="c-posts">
+      <h1 class="c-posts__heading">{{ key }}</h1>
+      <masonry-layout :cols="posts.length > 1 ? layoutColumns : 1">
+        <div v-for="(post, index) in posts" :key="index" class="c-posts__post">
+          <a :href="post.fields.link" target="_blank">
+            <img
+              :src="getPostImage(post.fields.image.sys.id)"
+              alt="post image"
+            />
+          </a>
+          <span class="c-posts__post-caption">{{ post.fields.caption }}</span>
+        </div>
+      </masonry-layout>
+    </section>
+    <section id="newsletter" class="c-newsletter">
+      <h1 class="c-newsletter__heading">NEWSLETTER</h1>
+      <p class="c-newsletter__subtext">
+        Subscribe and I’ll send you a newsletter of my monthly curations 💛
+      </p>
+      <form action="">
+        <input type="email" placeholder="I saved a nice spot for your email" />
+        <button type="submit">Subscribe</button>
+      </form>
+      <div class="c-newsletter__footer">
+        <span>© 2022</span>
+        <span class="c-newsletter__footer-author">
+          MADE IN LAGOS BY
+          <a href="https://twitter.com/kolapo_" target="_blank"> KOLAPO </a>
+        </span>
+        <a href="#nav">SCROLL TO TOP</a>
+      </div>
+    </section>
   </div>
 </template>
 
 <script>
+import api from '@/utils/api.js'
+
 export default {
+  async asyncData({ route }) {
+    const groupPostsByDate = (posts) => {
+      const groupedPosts = {}
+      const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ]
+
+      posts.forEach((post) => {
+        const date = new Date(post.sys.createdAt)
+        const month = months[date.getMonth()]
+        const year = date.getFullYear()
+
+        if (!groupedPosts[`${month} ${year}`]) {
+          groupedPosts[`${month} ${year}`] = []
+        }
+
+        groupedPosts[`${month} ${year}`].push(post)
+      })
+
+      return groupedPosts
+    }
+
+    const payload = {
+      category: '',
+    }
+
+    try {
+      const entries = await api.fetchPosts(payload)
+      const assets = entries.data.includes.Asset
+      const groupedPosts = groupPostsByDate(entries.data.items)
+
+      return {
+        groupedPosts,
+        assets,
+      }
+    } catch (error) {}
+  },
   data() {
     return {
       tags: [
@@ -50,6 +132,7 @@ export default {
         'Art',
       ],
       activeTag: 'Everything',
+      layoutColumns: 2,
     }
   },
   watch: {
@@ -69,6 +152,7 @@ export default {
   },
   mounted() {
     this.activeTag = this.$route.query.filter || 'Everything'
+    // this.groupPostsByDate()
   },
   methods: {
     toggleFilter() {
@@ -85,6 +169,10 @@ export default {
     capitalizeString(str) {
       return str.charAt(0).toUpperCase() + str.slice(1)
     },
+    getPostImage(id) {
+      const asset = this.assets.filter((asset) => asset.sys.id === id)
+      return `https:${asset[0].fields.file.url}`
+    },
   },
 }
 </script>
@@ -93,9 +181,11 @@ export default {
 .c-home {
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
   &__filter {
-    margin-top: 10rem;
+    margin: 10rem 0 8rem;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -169,6 +259,139 @@ export default {
           }
         }
       }
+    }
+  }
+}
+
+.c-posts {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 160rem;
+  margin-bottom: 12rem;
+
+  &__heading {
+    font-size: 18rem;
+    font-family: 'Cigra';
+    text-transform: uppercase;
+    color: $color-pink;
+    text-align: center;
+    margin-bottom: 6rem;
+  }
+
+  &__post {
+    margin: 0 auto;
+    width: 96%;
+
+    &:not(:last-child) {
+      margin-bottom: 12rem;
+    }
+
+    a {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: 1.2s $ease-out-expo;
+
+      img {
+        background: rgb(196, 196, 196);
+        transition: inherit;
+        object-position: center;
+        width: 100vw;
+        max-height: 150vh;
+        object-fit: cover;
+        pointer-events: none;
+      }
+
+      &:hover {
+        transform: scale(0.97);
+
+        img {
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    &-caption {
+      display: inline-block;
+      margin-top: 2rem;
+    }
+  }
+}
+
+.c-newsletter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 28rem 0 4rem;
+  background-color: #1d1d1f;
+  color: white;
+  // clip-path: circle(115.4vh at 50% 115vh);
+
+  &__heading {
+    font-size: 11rem;
+    font-family: 'Cigra';
+    text-align: center;
+  }
+
+  &__subtext {
+    font-size: 2.2rem;
+    margin: 2.6rem 0 9.6rem;
+    font-weight: 300;
+  }
+
+  form {
+    display: flex;
+    width: fit-content;
+    justify-content: center;
+    width: 100%;
+
+    > * {
+      width: 100%;
+      border-radius: 1rem;
+    }
+
+    input[type='email'] {
+      max-width: 56rem;
+      height: 7.8rem;
+      margin-right: 2.2rem;
+      border: 1px solid white;
+      background: transparent;
+      color: white;
+      padding: 0 2.6rem;
+
+      &::placeholder {
+        color: rgba(white, 0.6);
+      }
+    }
+
+    button {
+      max-width: 16rem;
+      border: none;
+      font-weight: 500;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    text-transform: uppercase;
+    max-width: 119rem;
+    margin-top: 18rem;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    &-author a {
+      color: #ff8ca1;
     }
   }
 }

@@ -1,12 +1,12 @@
 <template>
-  <nav class="c-nav">
+  <nav id="nav" class="c-nav">
     <div class="c-nav__container">
       <div class="c-nav__left">
         <nuxt-link to="/">interests.thekolapo.com</nuxt-link>
       </div>
       <div class="c-nav__right">
         <nuxt-link to="">About</nuxt-link>
-        <a href="">Newsletter</a>
+        <a href="#newsletter">Newsletter</a>
       </div>
     </div>
   </nav>
