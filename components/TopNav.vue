@@ -28,7 +28,8 @@ export default {
     display: flex;
     justify-content: space-between;
     max-width: 119rem;
-    margin: 5rem auto 0;
+    margin: 0 auto;
+    padding-top: 5rem;
 
     a {
       text-decoration: none;

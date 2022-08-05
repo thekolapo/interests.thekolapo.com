@@ -49,7 +49,11 @@
         Subscribe and I’ll send you a newsletter of my monthly curations 💛
       </p>
       <form action="">
-        <input type="email" placeholder="I saved a nice spot for your email" />
+        <input
+          type="email"
+          placeholder="I saved a nice spot for your email"
+          required
+        />
         <button type="submit">Subscribe</button>
       </form>
       <div class="c-newsletter__footer">
@@ -69,38 +73,6 @@ import api from '@/utils/api.js'
 
 export default {
   async asyncData({ route }) {
-    const groupPostsByDate = (posts) => {
-      const groupedPosts = {}
-      const months = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ]
-
-      posts.forEach((post) => {
-        const date = new Date(post.sys.createdAt)
-        const month = months[date.getMonth()]
-        const year = date.getFullYear()
-
-        if (!groupedPosts[`${month} ${year}`]) {
-          groupedPosts[`${month} ${year}`] = []
-        }
-
-        groupedPosts[`${month} ${year}`].push(post)
-      })
-
-      return groupedPosts
-    }
-
     const payload = {
       category: '',
     }
@@ -108,10 +80,9 @@ export default {
     try {
       const entries = await api.fetchPosts(payload)
       const assets = entries.data.includes.Asset
-      const groupedPosts = groupPostsByDate(entries.data.items)
 
       return {
-        groupedPosts,
+        posts: entries.data.items,
         assets,
       }
     } catch (error) {}
@@ -133,6 +104,7 @@ export default {
       ],
       activeTag: 'Everything',
       layoutColumns: 2,
+      groupedPosts: {},
     }
   },
   watch: {
@@ -145,14 +117,13 @@ export default {
     },
     '$route.query': {
       handler() {
-        this.activeTag = this.$route.query.filter || 'Everything'
+        this.filterPosts()
         this.toggleFilter()
       },
     },
   },
   mounted() {
-    this.activeTag = this.$route.query.filter || 'Everything'
-    // this.groupPostsByDate()
+    this.filterPosts()
   },
   methods: {
     toggleFilter() {
@@ -172,6 +143,52 @@ export default {
     getPostImage(id) {
       const asset = this.assets.filter((asset) => asset.sys.id === id)
       return `https:${asset[0].fields.file.url}?fm=jpg&fl=progressive`
+    },
+    filterPosts() {
+      this.activeTag = this.$route.query.filter || 'Everything'
+
+      let filteredPosts = this.posts.filter(
+        (post) =>
+          post.fields.category.toLowerCase() === this.activeTag.toLowerCase()
+      )
+
+      if (this.activeTag === 'Everything') {
+        filteredPosts = this.posts
+      }
+
+      const groupPostsByMonth = (posts) => {
+        const groupedPosts = {}
+        const months = [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
+        ]
+
+        posts.forEach((post) => {
+          const date = new Date(post.sys.createdAt)
+          const month = months[date.getMonth()]
+          const year = date.getFullYear()
+
+          if (!groupedPosts[`${month} ${year}`]) {
+            groupedPosts[`${month} ${year}`] = []
+          }
+
+          groupedPosts[`${month} ${year}`].push(post)
+        })
+
+        return groupedPosts
+      }
+
+      this.groupedPosts = groupPostsByMonth(filteredPosts)
     },
   },
 }
@@ -358,7 +375,7 @@ export default {
 
     input[type='email'] {
       max-width: 56rem;
-      height: 7.8rem;
+      height: 7.6rem;
       margin-right: 2.2rem;
       border: 1px solid white;
       background: transparent;
