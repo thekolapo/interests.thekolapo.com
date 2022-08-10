@@ -27,7 +27,7 @@ export default {
       {
         hid: 'og:image',
         property: 'og:image',
-        content: 'https://iykyk.studio/meta-image.png',
+        content: '',
       },
       {
         hid: 'og:description',
@@ -49,7 +49,7 @@ export default {
       {
         hid: 'twitter:image',
         property: 'twitter:image',
-        content: 'https://iykyk.studio/meta-image.png',
+        content: '',
       },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
