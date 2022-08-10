@@ -321,7 +321,7 @@ export default {
         width: 100vw;
         max-height: 150vh;
         object-fit: cover;
-        // pointer-events: none;
+        pointer-events: none;
       }
 
       &:hover {

@@ -5,7 +5,7 @@
         <nuxt-link to="/">interests.thekolapo.com</nuxt-link>
       </div>
       <div class="c-nav__right">
-        <nuxt-link to="">About</nuxt-link>
+        <nuxt-link to="about">About</nuxt-link>
         <a href="#newsletter">Newsletter</a>
       </div>
     </div>
